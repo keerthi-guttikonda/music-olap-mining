@@ -1,0 +1,80 @@
+------------------------ROLL UP-----------------------------------------
+WITH 
+MEMBER [Genre 1].[Language Name].[Indian Languages] AS 
+    SUM(
+        {
+            [Genre 1].[Language Name].[Hindi], 
+            [Genre 1].[Language Name].[Tamil], 
+            [Genre 1].[Language Name].[Telugu], 
+            [Genre 1].[Language Name].[Malayalam],
+            [Genre 1].[Language Name].[Kannada], 
+            [Genre 1].[Language Name].[Bengali], 
+            [Genre 1].[Language Name].[Gujarati]
+     
+        }
+    )
+MEMBER [Genre 1].[Language Name].[Foreign Languages] AS 
+    SUM(
+        {
+            [Genre 1].[Language Name].[English], 
+            [Genre 1].[Language Name].[French], 
+            [Genre 1].[Language Name].[Spanish], 
+            [Genre 1].[Language Name].[German], 
+            [Genre 1].[Language Name].[Russian], 
+            [Genre 1].[Language Name].[Italian]
+        }
+    )
+SELECT 
+    {[Measures].[Songs Listened], [Measures].[Concerts Attended]} ON COLUMNS, 
+    {
+        [Genre 1].[Language Name].[Indian Languages],
+        [Genre 1].[Language Name].[Foreign Languages]
+       
+    } ON ROWS  
+FROM [SNOWFLAKE];
+
+
+---------------------DRILLDOWN---------------------------------------
+-- DRILL DOWN: Expand data from Quarters to Months
+SELECT
+    { 
+        [Measures].[Songs Listened], 
+        [Measures].[Daily Listening Time]
+    } ON COLUMNS,
+    NONEMPTY(
+        [Time 1].[Quarter].[Quarter].Members * [Time 1].[Month].[Month].Members
+    ) ON ROWS
+FROM [SNOWFLAKE];
+
+
+
+----------------------SLICE-------------------------------------------
+SELECT 
+    NONEMPTY([Platform 1].[Platform Name].Members) ON COLUMNS,  
+    {[Listener 1].[Location].[Andhra Pradesh]} ON ROWS  
+FROM [SNOWFLAKE]  
+WHERE ({[Measures].[Songs Listened]});
+
+------------------------DICE-------------------------------------------
+SELECT 
+    {[Measures].[Songs Listened], [Measures].[Daily Listening Time]} ON COLUMNS, 
+    {[Listener 1].[Location].[Andhra Pradesh], [Listener 1].[Location].[Tamil Nadu]} * 
+    {[Genre 1].[Genre Name].[Pop], [Genre 1].[Genre Name].[Hip-Hop],[Genre 1].[Genre Name].[Folk]} ON ROWS  
+FROM [SNOWFLAKE];
+
+
+--------------------Pivot---------------------------------------
+WITH 
+MEMBER [Measures].[Avg Daily Listening Time] AS  
+    AVG([Time 1].[Day].Members, [Measures].[Daily Listening Time])  
+
+MEMBER [Measures].[Total Songs Listened] AS  
+    SUM([Time 1].[Day].Members, [Measures].[Songs Listened])  
+
+SELECT 
+    {[Platform 1].[Platform Name].Members} ON COLUMNS,  
+    {
+        [Measures].[Avg Daily Listening Time],  
+        [Measures].[Total Songs Listened]
+    } ON ROWS  
+FROM [SNOWFLAKE];
