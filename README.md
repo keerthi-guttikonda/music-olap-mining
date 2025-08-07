@@ -44,7 +44,7 @@ This repository supports full **reproducibility** of our experiments and finding
 2. Load the file `preprocessing_orange/preprocessing_workflow.ows`.
 3. Import the `synthetic_listener_data.csv`.
 4. Perform:
-   - **Missing value imputation** (5% numerical, 2% text)
+   - **Missing value imputation** 
    - **Discretization or normalization** (if needed)
    - **Categorical encoding**
 5. Export the cleaned dataset to `.tab` or `.csv` format (already included: `preprocessed_data.tab`).
