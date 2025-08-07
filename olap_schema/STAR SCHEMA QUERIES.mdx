@@ -1,0 +1,76 @@
+----------ROLLUP SCHEMA------------------------- 
+WITH 
+MEMBER [Genre].[Genre Name].[Classical Music] AS 
+    SUM(
+        {
+		    [Genre].[Genre Name].[Classical], 
+            [Genre].[Genre Name].[Jazz], 
+            [Genre].[Genre Name].[WesternClassical], 
+            [Genre].[Genre Name].[Instrumental]
+        }
+    )
+
+MEMBER [Genre].[Genre Name].[Pop Music] AS 
+    SUM(
+        {
+            [Genre].[Genre Name].[Pop], 
+            [Genre].[Genre Name].[K-Pop], 
+            [Genre].[Genre Name].[Synth Pop], 
+            [Genre].[Genre Name].[Indie Pop]
+        }
+    )
+
+SELECT 
+    {[Measures].[Songs Listened], [Measures].[Daily Listening Time],[Measures].[Concerts Attended]} ON COLUMNS, 
+    {
+        [Genre].[Genre Name].[Classical Music],
+        [Genre].[Genre Name].[Pop Music]
+    } ON ROWS
+FROM [STAR]
+ 
+ ------------------------DRILL DOWN------------------
+SELECT 
+    {[Measures].[Songs Listened], [Measures].[Daily Listening Time]} ON COLUMNS, 
+
+    NONEMPTY({
+        [Time].[Week].[Week 1] * [Time].[day name].[day name].Members,
+        [Time].[Week].[Week 2] * [Time].[day name].[day name].Members,
+        [Time].[Week].[Week 3] * [Time].[day name].[day name].Members,
+        [Time].[Week].[Week 4] * [Time].[day name].[day name].Members
+    }) ON ROWS
+
+FROM [STAR];
+
+-------------------SLICE----------------------
+SELECT 
+    [Time].[Day Name].Members ON COLUMNS,  
+    NONEMPTY([Genre].[Genre Name].Members) ON ROWS  
+FROM [STAR]  
+WHERE (
+    [Platform].[Platform Name].[Spotify]
+);
+
+
+
+SELECT 
+    {[Genre].[Genre Name].MEMBERS} ON COLUMNS,
+    {[Platform].[Platform Name].[Spotify]} ON ROWS
+FROM [STAR]
+
+
+
+
+-----------------DICE-------------------------------
+SELECT 
+    {[Measures].[Songs Listened], [Measures].[Fact Listen Count]} ON COLUMNS, 
+    {[Genre].[Genre Name].[Pop], [Genre].[Genre Name].[Classical]} * 
+    {[Platform].[Platform Name].[Spotify], [Platform].[Platform Name].[Gaana],[Platform].[Platform Name].[Amazon Music]} ON ROWS
+FROM [STAR];
+
+-------------PIVOT-------------------
+SELECT 
+    {[Platform].[Platform Name].Members} ON COLUMNS,
+    {[Measures].[Daily Listening Time], [Measures].[Songs Listened], [Measures].[Subscription Count], [Measures].[Concerts Attended]} ON ROWS
+FROM [STAR]
+WHERE ([Genre].[Genre Name].&[Pop])
+
