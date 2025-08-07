@@ -38,20 +38,20 @@ This repository supports full **reproducibility** of our experiments and finding
 ### 🟠 1. Preprocessing with Orange
 
 1. Open **Orange**.
-2. Load the file `preprocessing_orange/preprocessing_workflow.ows`.
-3. Import the `synthetic_listener_data.csv`.
+2. Load the file `Music Mining Orange Workflow.ows`.
+3. Import the `Music_Listener_Dataset.csv`.
 4. Perform:
    - **Missing value imputation** 
    - **Discretization or normalization** (if needed)
-   - **Categorical encoding**
-5. Export the cleaned dataset to `.tab` or `.csv` format (already included: `preprocessed_data.tab`).
+   - **Categorical encoding** (if needed)
+5. Export the cleaned dataset to `.tab` or `.csv`.
 
 ### 🛢 2. Schema and Data Warehouse Setup
 
 1. Open **SQL Server Management Studio (SSMS)**.
 2. Create a new database (e.g., `MusicDW`).
-3. Run `create_star_schema.sql` to create tables.
-4. Use the preprocessed `.tab` file to prepare insert statements or use `insert_dimension_tables.sql`.
+3. Run sql queries to create tables.
+4. Use the preprocessed `.tab` file to prepare insert statements.
 
 ### 🧊 3. OLAP Cube Construction (SSAS)
 
